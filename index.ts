@@ -1,17 +1,17 @@
 import express from "express";
 import admin from "firebase-admin";
+import usersRouter from "./src/controllers/users";
+import contributionRouter from "./src/controllers/contributionroutes";
 var serviceAccount = require("./xx.json");
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 3008;
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  // databaseURL: "https://tangle-eede1-default-rtdb.firebaseio.com/",
+  databaseURL: process.env.DATABASE_URL,
 });
-
-app.get("/", (req, res) => {
-  res.send("Hello Dear!");
-});
-
+app.use(express.json());
+app.use("/user", usersRouter);
+app.use("/contribution", contributionRouter);
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
 });

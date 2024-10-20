@@ -47,6 +47,7 @@ coverage
 bower_components
 xx.json
 .xx
+.env
 # node-waf configuration
 
 .lock-wscript
