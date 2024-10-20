@@ -1,11 +1,25 @@
 import { Router } from "express";
 
 import type { BodyContributionData, CustomRequest } from "../../types";
-import { createContribution } from "../actions/contribution";
+import {
+  createContribution,
+  getUsersContributionGroups,
+} from "../actions/contribution";
 import verifyIDToken from "../../middilewares/verifyIDToken";
 import { uuidv7 } from "uuidv7";
 
 const contributionRouter = Router();
+contributionRouter.get("/", verifyIDToken, async (req, res) => {
+  try {
+    const groupLists = await getUsersContributionGroups(req.user);
+    res.status(200).json({
+      messsage: "Contribution groups retrieved successfully",
+      data: groupLists,
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error retrieveing contribution list" });
+  }
+});
 
 contributionRouter.post("/create", verifyIDToken, async (req, res) => {
   try {
@@ -21,7 +35,6 @@ contributionRouter.post("/create", verifyIDToken, async (req, res) => {
 
     res.status(201).json({ message: response });
   } catch (error) {
-    console.error("Error creating contribution:", error);
     res.status(500).json({ message: "Error creating contribution" });
   }
 });
