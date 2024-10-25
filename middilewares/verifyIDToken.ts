@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { getAuth } from "firebase-admin/auth";
-import type { CustomRequest } from "../types";
+import type { CustomRequest } from "../configs/types";
+import logger from "../configs/logger";
 
 const verifyIDToken = async (
   req: CustomRequest,
@@ -21,6 +22,7 @@ const verifyIDToken = async (
     req.user = decodedToken.uid; // Attach the decoded user to the request object
     next(); // Proceed to the next middleware or route handler
   } catch (err) {
+    logger.error(err);
     return res.status(403).json({ message: "Forbidden, token is invalid" });
   }
 };

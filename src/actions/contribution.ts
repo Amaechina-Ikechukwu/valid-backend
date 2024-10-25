@@ -1,5 +1,5 @@
 import { getDatabase } from "firebase-admin/database";
-import type { CreateContribution } from "../../types";
+import type { CreateContribution } from "../../configs/types";
 
 const createContribution = async (
   data: CreateContribution
