@@ -1,16 +1,6 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "build",
-        "-t",
-        "gcr.io/$PROJECT_ID/valid",
-        ".",
-        "&&",
-        "docker",
-        "push",
-        "gcr.io/$PROJECT_ID/valid",
-      ]
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/valid", "."]
 
     # secretEnv: ["DATABASE_URL", "API_KEY"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
