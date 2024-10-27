@@ -1,18 +1,17 @@
-# Use a pre-built Bun image
-FROM oven/bun:latest
+FROM alpine:latest
 
-# Set the working directory
+# Install wget to fetch Bun (or use curl if preferred)
+RUN apk add --no-cache wget && \
+    wget -qO- https://bun.sh/install | bash
+
+# Set Bun in PATH
+ENV PATH="/root/.bun/bin:$PATH"
+
+# Set working directory and copy files
 WORKDIR /app
-
-# # Copy application code
-# COPY . .
-# COPY .env .env
-
-# Install dependencies with Bun
+COPY . .
 RUN bun install
 
-# Expose the application's port
+# Expose the app’s port and set the command to start the app on deployment
 EXPOSE 3000
-
-# Start the application
 CMD ["bun", "run", "start"]
