@@ -1,11 +1,17 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/valid", "."]
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/valid",
+        ".",
+        "&&",
+        "docker",
+        "push",
+        "gcr.io/$PROJECT_ID/valid",
+      ]
     secretEnv: ["DATABASE_URL", "API_KEY"]
-
-  - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/valid"]
-
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "gcloud"
     args:
@@ -13,10 +19,11 @@ steps:
       - deploy
       - valid
       - --image=gcr.io/$PROJECT_ID/valid
-      - --region=YOUR_REGION
+      - --region=us-central1
       - --platform=managed
-      - --allow-unauthenticated
       - --update-secrets=/app/.env=DATABASE_URL:latest,API_KEY:latest
+      # Remove --allow-unauthenticated for production
+      - --allow-unauthenticated
 
 images:
   - "gcr.io/$PROJECT_ID/valid"
