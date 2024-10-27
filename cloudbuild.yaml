@@ -11,7 +11,7 @@ steps:
     args:
       - run
       - deploy
-      - your-service-name
+      - valid
       - --image=gcr.io/$PROJECT_ID/valid
       - --region=YOUR_REGION
       - --platform=managed
