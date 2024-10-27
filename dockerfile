@@ -1,14 +1,9 @@
-FROM alpine:latest
-
-# Install wget to fetch Bun (or use curl if preferred)
-RUN apk add --no-cache wget && \
-    wget -qO- https://bun.sh/install | bash
-
+FROM oven/bun:latest
 # Set Bun in PATH
 ENV PATH="/root/.bun/bin:$PATH"
 
 # Set working directory and copy files
-WORKDIR /app
+WORKDIR /
 COPY . .
 RUN bun install
 
