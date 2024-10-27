@@ -11,6 +11,7 @@ steps:
         "push",
         "gcr.io/$PROJECT_ID/valid",
       ]
+
     # secretEnv: ["DATABASE_URL", "API_KEY"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "gcloud"
@@ -24,6 +25,9 @@ steps:
       - --update-secrets=/app/.env=DATABASE_URL:latest,API_KEY:latest
       # Remove --allow-unauthenticated for production
       - --allow-unauthenticated
+
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 images:
   - "gcr.io/$PROJECT_ID/valid"
