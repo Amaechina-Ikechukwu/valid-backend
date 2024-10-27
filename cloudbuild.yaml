@@ -11,7 +11,7 @@ steps:
         "push",
         "gcr.io/$PROJECT_ID/valid",
       ]
-    secretEnv: ["DATABASE_URL", "API_KEY"]
+    # secretEnv: ["DATABASE_URL", "API_KEY"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "gcloud"
     args:
@@ -27,9 +27,8 @@ steps:
 
 images:
   - "gcr.io/$PROJECT_ID/valid"
-
-secrets:
-  - kmsKeyName: projects/$PROJECT_ID/locations/global/keyRings/YOUR_KEY_RING/cryptoKeys/YOUR_KEY
-    secretEnv:
-      DATABASE_URL: "projects/$PROJECT_ID/secrets/DATABASE_URL/versions/latest"
-      API_KEY: "projects/$PROJECT_ID/secrets/API_KEY/versions/latest"
+# secrets:
+#   - kmsKeyName: projects/$PROJECT_ID/locations/global/keyRings/YOUR_KEY_RING/cryptoKeys/YOUR_KEY
+#     secretEnv:
+#       DATABASE_URL: "projects/$PROJECT_ID/secrets/DATABASE_URL/versions/latest"
+#       API_KEY: "projects/$PROJECT_ID/secrets/API_KEY/versions/latest"
