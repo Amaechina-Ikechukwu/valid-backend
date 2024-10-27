@@ -4,9 +4,9 @@ FROM oven/bun:latest
 # Set the working directory
 WORKDIR /app
 
-# Copy application code
-COPY . .
-COPY .env .env
+# # Copy application code
+# COPY . .
+# COPY .env .env
 
 # Install dependencies with Bun
 RUN bun install
