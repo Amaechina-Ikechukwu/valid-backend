@@ -8,7 +8,7 @@ import { transactionsRouter } from "./src/controllers/transactionsRouter";
 var serviceAccount = require("./xx.json");
 
 const app = express();
-const port = process.env.PORT || 3008;
+const port = process.env.PORT;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
