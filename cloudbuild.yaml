@@ -16,5 +16,7 @@ steps:
       - "gcr.io/$PROJECT_ID/valid:$COMMIT_SHA"
       - "--region"
       - "us-central1"
+options:
+  logging: CLOUD_LOGGING_ONLY
 images:
   - "gcr.io/$PROJECT_ID/valid:$COMMIT_SHA"
