@@ -2,12 +2,23 @@ version: "3.8"
 
 services:
   my-app:
-    image: 5d96b69dcb8c
+    image: 5d96b69dcb8c # Replace with your image name if already built, or use the build option below
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+        - FLW_SECRET_HASH=${FLW_SECRET_HASH}
+        - FLW_PUBLIC_KEY=${FLW_PUBLIC_KEY}
+        - FLW_SECRET_KEY=${FLW_SECRET_KEY}
+        - PORT=${PORT}
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      FLW_SECRET_HASH: ${FLW_SECRET_HASH}
+      FLW_PUBLIC_KEY: ${FLW_PUBLIC_KEY}
+      FLW_SECRET_KEY: ${FLW_SECRET_KEY}
+      PORT: ${PORT}
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT}:${PORT}" # Exposes PORT in .env or defaults to 8080 if specified
     env_file:
       - .env
-    restart: unless-stopped # Added for container stability
