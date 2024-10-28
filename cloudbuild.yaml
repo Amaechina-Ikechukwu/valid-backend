@@ -1,12 +1,8 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "build",
-        "-t",
-        "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest",
-        ".",
-      ]
+    script: |
+      docker build -t us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest .
+    automapSubstitutions: true  # Not strictly necessary with defined substitutions
     secretEnv:
       [
         "DATABASE_URL",
@@ -16,18 +12,9 @@ steps:
         "PORT",
       ]
 
-  - name: "gcr.io/cloud-builders/gcloud"
-    args:
-      - run
-      - deploy
-      - cloudrunservice
-      - --image
-      - "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest"
-      - --region
-      - "us-central1"
-      - --platform
-      - managed
-      - --allow-unauthenticated
+  - name: 'gcr.io/cloud-builders/gcloud'
+    script: |
+    gcloud run deploy cloudrunservice --image us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest --region us-central1 --platform managed --allow-unauthenticated
 
 secrets:
   - secretEnv:
