@@ -3,9 +3,11 @@ steps:
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA", "."]
+
   # Push the container image to Container Registry
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"]
+
   # Deploy container image to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
@@ -17,12 +19,16 @@ steps:
       - "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"
       - "--region"
       - "us-central1"
+      - "--platform"
+      - "managed"
+      - "--allow-unauthenticated"
+
 secrets:
   - secretEnv:
-      DATABASE_URL: projects/kaelance-8a366/secrets/DATABASE_URL/versions/latest
-      FLW_SECRET_HASH: projects/kaelance-8a366/secrets/FLW_SECRET_HASH/versions/latest
-      FLW_PUBLIC_KEY: projects/kaelance-8a366/secrets/FLW_PUBLIC_KEY/versions/latest
-      FLW_SECRET_KEY: projects/kaelance-8a366/secrets/FLW_SECRET_KEY/versions/latest
+      DATABASE_URL: "projects/kaelance-8a366/secrets/DATABASE_URL/versions/latest"
+      FLW_SECRET_HASH: "projects/kaelance-8a366/secrets/FLW_SECRET_HASH/versions/latest"
+      FLW_PUBLIC_KEY: "projects/kaelance-8a366/secrets/FLW_PUBLIC_KEY/versions/latest"
+      FLW_SECRET_KEY: "projects/kaelance-8a366/secrets/FLW_SECRET_KEY/versions/latest"
 
 images:
   - "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"
