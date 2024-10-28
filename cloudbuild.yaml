@@ -15,6 +15,7 @@ secrets:
       FLW_SECRET_KEY: projects/kaelance-8a366/secrets/FLW_SECRET_KEY/versions/latest
 
   # Deploy to Cloud Run (remove --allow-unauthenticated for security)
+steps:
   - name: "gcr.io/cloud-builders/gcloud"
     script: |
       gcloud run deploy cloudrunservice --image us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest --region us-central1 --platform managed --port 8080
