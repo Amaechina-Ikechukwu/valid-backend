@@ -32,3 +32,4 @@ steps:
 
 images:
   - "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"
+logging: CLOUD_LOGGING_ONLY
