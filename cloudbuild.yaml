@@ -1,12 +1,22 @@
+# Optional: Consider authentication mechanisms if needed
 steps:
+  # Build the container image
   - name: "gcr.io/cloud-builders/docker"
-    script: |
-      docker build -t us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest . 
-    automapSubstitutions: true # Not strictly necessary with defined substitutions
-
-images:
-  - "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest"
-
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA", "."]
+  # Push the container image to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"]
+  # Deploy container image to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "valid-api"
+      - "--image"
+      - "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"
+      - "--region"
+      - "us-central1"
 secrets:
   - secretEnv:
       DATABASE_URL: projects/kaelance-8a366/secrets/DATABASE_URL/versions/latest
@@ -14,10 +24,5 @@ secrets:
       FLW_PUBLIC_KEY: projects/kaelance-8a366/secrets/FLW_PUBLIC_KEY/versions/latest
       FLW_SECRET_KEY: projects/kaelance-8a366/secrets/FLW_SECRET_KEY/versions/latest
 
-  # Deploy to Cloud Run (remove --allow-unauthenticated for security)
-steps:
-  - name: "gcr.io/cloud-builders/gcloud"
-    script: |
-      gcloud run deploy cloudrunservice --image us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest --region us-central1 --platform managed --port 8080
-
-# Optional: Consider authentication mechanisms if needed
+images:
+  - "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"
