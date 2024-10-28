@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  my-app:
+    image: 5d96b69dcb8c
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    restart: unless-stopped # Added for container stability
