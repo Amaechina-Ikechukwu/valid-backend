@@ -23,6 +23,11 @@ steps:
 
   # Deploy container image to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    env:
+      - "DATABASE_URL=$(DATABASE_URL)"
+      - "FLW_SECRET_HASH=$(FLW_SECRET_HASH)"
+      - "FLW_PUBLIC_KEY=$(FLW_PUBLIC_KEY)"
+      - "FLW_SECRET_KEY=$(FLW_SECRET_KEY)"
     entrypoint: gcloud
     args:
       - "run"
