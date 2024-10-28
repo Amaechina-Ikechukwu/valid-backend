@@ -1,13 +1,30 @@
 options:
-  logging: CLOUD_LOGGING_ONLY 
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    script: |
-      docker build -t us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest .
+    args:
+      [
+        "build",
+        "-t",
+        "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest",
+        ".",
+      ]
     automapSubstitutions: true
+
 images:
   - "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest"
-steps:
-- name: 'gcr.io/cloud-builders/gcloud'
-  script: |
-    gcloud run deploy cloudrunservice --image us-docker.pkg.dev/cloudrun/container/hello --region us-central1 --platform managed --allow-unauthenticated
+
+  # The following step is to deploy to Cloud Run
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "cloudrunservice"
+      - "--image"
+      - "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api:latest" # Updated to match your image
+      - "--region"
+      - "us-central1"
+      - "--platform"
+      - "managed"
+      - "--allow-unauthenticated"
