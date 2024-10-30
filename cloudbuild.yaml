@@ -25,12 +25,19 @@ steps:
       - "managed"
       - "--allow-unauthenticated"
       # - "--set-secrets=valid-secrets=$valid-secrets" # Use --set-secrets instead of --update-secrets
-    secretEnv: ["valid-secrets"]
+    secretEnv:
+      ["DATABASE_URL", "FLW_SECRET_HASH", "FLW_PUBLIC_KEY", "FLW_SECRET_KEY"]
 
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/valid-secrets/versions/latest
-      env: "valid-secrets"
+      env: "DATABASE_URL"
+    - versionName: projects/$PROJECT_ID/secrets/valid-secrets/versions/latest
+      env: "FLW_SECRET_HASH"
+    - versionName: projects/$PROJECT_ID/secrets/valid-secrets/versions/latest
+      env: "FLW_PUBLIC_KEY"
+    - versionName: projects/$PROJECT_ID/secrets/valid-secrets/versions/latest
+      env: "FLW_SECRET_KEY"
 
       # env: "valid-secrets"
 # images:
