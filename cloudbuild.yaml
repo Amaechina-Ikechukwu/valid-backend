@@ -24,13 +24,13 @@ steps:
       - "--platform"
       - "managed"
       - "--allow-unauthenticated"
-      - "--set-secrets=VALID_SECRETS=$VALID_SECRETS" # Use --set-secrets instead of --update-secrets
-    secretEnv: ["VALID_SECRETS"]
+      # - "--set-secrets=valid-secrets=$valid-secrets" # Use --set-secrets instead of --update-secrets
+    secretEnv: ["valid-secrets"]
 
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/valid-secrets/versions/latest
-      env: "VALID_SECRETS"
+      env: "valid-secrets"
 
       # env: "valid-secrets"
 # images:
