@@ -24,11 +24,13 @@ steps:
       - "--platform"
       - "managed"
       - "--allow-unauthenticated"
-      - "--update-secrets=/projects/$PROJECT_ID/secrets/valid-secrets:valid-secrets"
+      - "--update-secrets=VALID_SECRETS:valid-secrets"
 
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/valid-secrets/versions/latest
+      env: "VALID_SECRETS"
+
       # env: "valid-secrets"
 # images:
 #   - "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api@sha256:f39c0ddb22b7a58216f46f9a9961d7c37f038fb5e61737e75284f54106994ded"
