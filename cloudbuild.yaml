@@ -25,6 +25,7 @@ steps:
       - "managed"
       - "--allow-unauthenticated"
       - "--update-secrets=VALID_SECRETS:valid-secrets"
+    secretEnv: ["VALID_SECRETS"]
 
 availableSecrets:
   secretManager:
