@@ -20,7 +20,7 @@ steps:
       - "deploy"
       - "valid-api"
       - "--image"
-      - "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api@sha256:f39c0ddb22b7a58216f46f9a9961d7c37f038fb5e61737e75284f54106994ded"
+      - "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"
       - "--region"
       - "us-central1"
       - "--platform"
