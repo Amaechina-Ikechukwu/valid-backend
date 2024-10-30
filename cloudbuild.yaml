@@ -5,29 +5,15 @@ options:
 steps:
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
-    env:
-      - "DATABASE_URL=$(DATABASE_URL)"
-      - "FLW_SECRET_HASH=$(FLW_SECRET_HASH)"
-      - "FLW_PUBLIC_KEY=$(FLW_PUBLIC_KEY)"
-      - "FLW_SECRET_KEY=$(FLW_SECRET_KEY)"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA", "."]
 
   # Push the container image to Container Registry
   - name: "gcr.io/cloud-builders/docker"
-    env:
-      - "DATABASE_URL=$(DATABASE_URL)"
-      - "FLW_SECRET_HASH=$(FLW_SECRET_HASH)"
-      - "FLW_PUBLIC_KEY=$(FLW_PUBLIC_KEY)"
-      - "FLW_SECRET_KEY=$(FLW_SECRET_KEY)"
     args: ["push", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA"]
 
   # Deploy container image to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    env:
-      - "DATABASE_URL=$(DATABASE_URL)"
-      - "FLW_SECRET_HASH=$(FLW_SECRET_HASH)"
-      - "FLW_PUBLIC_KEY=$(FLW_PUBLIC_KEY)"
-      - "FLW_SECRET_KEY=$(FLW_SECRET_KEY)"
+
     entrypoint: gcloud
     args:
       - "run"
