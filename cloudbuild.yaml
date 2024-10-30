@@ -24,7 +24,7 @@ steps:
       - "--platform"
       - "managed"
       - "--allow-unauthenticated"
-      - "--update-secrets=VALID_SECRETS:valid-secrets"
+      - "--set-secrets=VALID_SECRETS=$VALID_SECRETS" # Use --set-secrets instead of --update-secrets
     secretEnv: ["VALID_SECRETS"]
 
 availableSecrets:
