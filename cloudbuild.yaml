@@ -35,7 +35,13 @@ steps:
       - "--allow-unauthenticated"
       # - "--set-secrets=valid-secrets=$valid-secrets" # Use --set-secrets instead of --update-secrets
     secretEnv:
-      ["DATABASE_URL", "FLW_SECRET_HASH", "FLW_PUBLIC_KEY", "FLW_SECRET_KEY"]
+      [
+        "DATABASE_URL",
+        "FLW_SECRET_HASH",
+        "FLW_PUBLIC_KEY",
+        "FLW_SECRET_KEY",
+        "GOOGLE_APPLICATION_CREDENTIALS",
+      ]
 
 availableSecrets:
   secretManager:
