@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "bun run index.ts",
-    "dev": "bun --watch run index.ts"
+    "dev": "bun --watch run index.ts",
+    "create-env": "printenv > .env"
   },
   "devDependencies": {
     "@types/bun": "latest"
