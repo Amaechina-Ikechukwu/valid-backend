@@ -33,6 +33,11 @@ steps:
       - "--platform"
       - "managed"
       - "--allow-unauthenticated"
+      - "--set-secrets=DATABASE_URL=database:latest"
+      - "--set-secrets=FLW_SECRET_HASH=flw-hash:latest"
+      - "--set-secrets=FLW_PUBLIC_KEY=flw-public:latest"
+      - "--set-secrets=FLW_SECRET_KEY=flw-secret:latest"
+      - "--set-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest"
       # - "--set-secrets=valid-secrets=$valid-secrets" # Use --set-secrets instead of --update-secrets
     secretEnv:
       [
