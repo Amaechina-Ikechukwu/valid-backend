@@ -6,7 +6,6 @@ steps:
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     args: ["run", "create-env"]
     env:
-      - "MY_SECRET_KEY=${_MY_SECRET_KEY}"
       - "DATABASE_URL=${_DATABASE_URL}"
       - "FLW_SECRET_HASH=${_FLW_SECRET_HASH}"
       - "FLW_PUBLIC_KEY=${_FLW_PUBLIC_KEY}"
