@@ -7,10 +7,10 @@ steps:
     args:
       - "-c"
       - |
-        echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /workspace/serviceAccountKey.json
+        echo "$SERVICE_ACCOUNT" > /workspace/serviceAccountKey.json
         export GOOGLE_APPLICATION_CREDENTIALS=/workspace/serviceAccountKey.json
     env:
-      - "FIREBASE_SERVICE_ACCOUNT_JSON=$(gcloud secrets versions access latest --secret=firebase-service-account)"
+      - "SERVICE_ACCOUNT=$(gcloud secrets versions access latest --secret=firebase-service-account)"
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA", "."]
