@@ -5,15 +5,25 @@ import contributionRouter from "./src/controllers/contributionroutes";
 
 import morganMiddleware from "./configs/morgan";
 import { transactionsRouter } from "./src/controllers/transactionsRouter";
-var serviceAccount = require("./xx.json");
+
+const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
+const client = new SecretManagerServiceClient();
 
 const app = express();
 const port = process.env.PORT;
-
+const getSecret = async () => {
+  const [accessResponse] = await client.accessSecretVersion({
+    name: "projects/989051447768/secrets/database/versions/latest",
+  });
+  const responsePayload = accessResponse.payload.data.toString("utf8");
+  return responsePayload;
+};
+const database = await getSecret();
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
-  databaseURL: process.env.DATABASE_URL,
+  databaseURL: database,
 });
+
 app.use(morganMiddleware);
 app.use(express.json());
 app.use("/user", usersRouter);
