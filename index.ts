@@ -10,7 +10,7 @@ const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const client = new SecretManagerServiceClient();
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 const getSecret = async () => {
   const [accessResponse] = await client.accessSecretVersion({
     name: "projects/989051447768/secrets/database/versions/latest",
