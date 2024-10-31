@@ -30,13 +30,13 @@ steps:
 
 availableSecrets:
   secretManager:
-    - versionName: projects/989051447768/secrets/versions/database
+    - versionName: projects/989051447768/secrets/database/versions/latest
       env: "DATABASE_URL"
-    - versionName: projects/989051447768/secrets/versions/flw-hash
+    - versionName: projects/989051447768/secrets/flw-hash/versions/latest
       env: "FLW_SECRET_HASH"
-    - versionName: projects/989051447768/secrets/versions/flw-public
+    - versionName: projects/989051447768/secrets/flw-public/versions/latest
       env: "FLW_PUBLIC_KEY"
-    - versionName: projects/989051447768/secrets/versions/flw-secret
+    - versionName: projects/989051447768/secrets/flw-secret/versions/latest
       env: "FLW_SECRET_KEY"
 
       # env: "valid-secrets"
