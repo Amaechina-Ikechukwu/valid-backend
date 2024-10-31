@@ -2,6 +2,15 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /workspace/serviceAccountKey.json
+        export GOOGLE_APPLICATION_CREDENTIALS=/workspace/serviceAccountKey.json
+    env:
+      - "FIREBASE_SERVICE_ACCOUNT_JSON=$(gcloud secrets versions access latest --secret=firebase-service-account)"
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/valid-api:$COMMIT_SHA", "."]
@@ -38,7 +47,8 @@ availableSecrets:
       env: "FLW_PUBLIC_KEY"
     - versionName: projects/989051447768/secrets/flw-secret/versions/latest
       env: "FLW_SECRET_KEY"
-
+    - versionName: projects/989051447768/secrets/firebase-service-account/versions/latest
+      env: "GOOGLE_APPLICATION_CREDENTIALS"
       # env: "valid-secrets"
 # images:
 #   - "us-central1-docker.pkg.dev/kaelance-8a366/valid/valid-api@sha256:f39c0ddb22b7a58216f46f9a9961d7c37f038fb5e61737e75284f54106994ded"

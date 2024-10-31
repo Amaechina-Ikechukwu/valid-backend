@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT;
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.applicationDefault(),
   databaseURL: process.env.DATABASE_URL,
 });
 app.use(morganMiddleware);
