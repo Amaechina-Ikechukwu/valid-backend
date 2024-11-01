@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  my-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=${_DATABASE_URL}
+      - FLW_SECRET_HASH=${_FLW_SECRET_HASH}
+      - FLW_PUBLIC_KEY=${_FLW_PUBLIC_KEY}
+      - FLW_SECRET_KEY=${_FLW_SECRET_KEY}
+      - PORT=${PORT}
+    ports:
+      - "${PORT}:${PORT}" # Exposes the PORT defined in .env or defaults if specified
+    env_file:
+      - .env
