@@ -7,21 +7,11 @@ import {
 } from "../actions/transactions";
 import { getGroupTransactionsDetails } from "../actions/grouptransactions";
 import verifyIDToken from "../../middilewares/verifyIDToken";
-const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
-const client = new SecretManagerServiceClient();
-const getSecret = async () => {
-  const [accessResponse] = await client.accessSecretVersion({
-    name: "projects/989051447768/secrets/flw-hash/versions/latest",
-  });
-  const responsePayload = accessResponse.payload.data.toString("utf8");
-  return responsePayload;
-};
-const hash = await getSecret();
 
 const transactionsRouter = Router();
 transactionsRouter.post("/flw-webhook", async (req, res) => {
   // If you specified a secret hash, check for the signature
-  const secretHash = hash;
+  const secretHash = process.env.FLW_SECRET_HASH;
   const signature = req.headers["verif-hash"];
   if (!signature || signature !== secretHash) {
     // This request isn't from Flutterwave; discard

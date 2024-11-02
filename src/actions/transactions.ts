@@ -2,42 +2,12 @@ import { getDatabase } from "firebase-admin/database";
 import logger from "../../configs/logger";
 import type { FlutterWaveWebhookEvent } from "../../configs/types";
 import { updateGroupTransactionDetails } from "./grouptransactions";
-const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
-const client = new SecretManagerServiceClient();
-
-const getPublicSecret = async () => {
-  const [accessResponse] = await client.accessSecretVersion({
-    name: "projects/989051447768/secrets/flw-public/versions/latest",
-  });
-  const responsePayload = accessResponse.payload.data.toString("utf8");
-  return responsePayload;
-};
-const getSecretSecret = async () => {
-  const [accessResponse] = await client.accessSecretVersion({
-    name: "projects/989051447768/secrets/flw-secret/versions/latest",
-  });
-  const responsePayload = accessResponse.payload.data.toString("utf8");
-  return responsePayload;
-};
-// Fetch both secrets concurrently
-const fetchSecrets = async () => {
-  try {
-    const [publicSecret, secretSecret] = await Promise.all([
-      getPublicSecret(),
-      getSecretSecret(),
-    ]);
-
-    return { publicSecret, secretSecret };
-  } catch (error) {
-    logger.error("Error fetching secrets:", error);
-    throw error;
-  }
-};
-
-const { publicSecret, secretSecret } = await fetchSecrets();
 
 const Flutterwave = require("flutterwave-node-v3");
-const flw = new Flutterwave(publicSecret, secretSecret);
+const flw = new Flutterwave(
+  process.env.FLW_PUBLIC_KEY,
+  process.env.FLW_SECRET_KEY
+);
 const verifyFlutterWebhook = async (
   payloadId: number,
   expectedAmount: number,

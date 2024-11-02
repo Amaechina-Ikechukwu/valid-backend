@@ -18,6 +18,17 @@ export interface BodyContributionData {
   amount: string;
   purpose?: string;
   photoUrl?: string;
+  participants: [];
+  remaining: number;
+  id: string;
+}
+export interface AllContributionData {
+  name: string;
+  photoUrl?: string;
+  remaining: number;
+  id: string;
+  admin: string;
+  participants: string[];
 }
 
 export type FlutterWaveWebhookEvent = {

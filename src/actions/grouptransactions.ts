@@ -44,9 +44,18 @@ const updateGroupContributionAmount = (
       .once("value")
       .then((snapshot) => {
         const contributed = snapshot.val()?.contributedAmount || 0; // Safely handle undefined values
-        return groupRef.update({
-          contributedAmount: contributed + payload.amount,
-        });
+        const participants: string[] = snapshot.val()?.participants;
+        if (participants.includes(payload.customer.email) == false) {
+          participants.push(payload.customer.email);
+          return groupRef.update({
+            contributedAmount: contributed + payload.amount,
+            participants: participants,
+          });
+        } else {
+          return groupRef.update({
+            contributedAmount: contributed + payload.amount,
+          });
+        }
       })
       .then(() => {
         resolve(); // Resolve when the update is successful

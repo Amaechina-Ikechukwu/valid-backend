@@ -1,5 +1,24 @@
 import { getDatabase } from "firebase-admin/database";
-import type { CreateContribution } from "../../configs/types";
+import type {
+  AllContributionData,
+  BodyContributionData,
+  CreateContribution,
+} from "../../configs/types";
+
+const percentageContributed = (
+  amount: string | number,
+  contributedAmount: number
+): number => {
+  // Convert the amount to a number, removing commas if it's a string
+  const parsedAmount =
+    typeof amount === "string" ? parseFloat(amount.replace(/,/g, "")) : amount;
+
+  if (!parsedAmount || parsedAmount <= 0 || contributedAmount < 0) {
+    return 0; // Return 0% if amount is invalid or zero
+  }
+
+  return parseFloat(((contributedAmount / parsedAmount) * 100).toFixed(2));
+};
 
 const createContribution = async (
   data: CreateContribution
@@ -16,13 +35,14 @@ const createContribution = async (
 };
 
 const getUsersContributionGroups = async (
-  user: string
-): Promise<CreateContribution[]> => {
+  user: string = "XOOGNnqduEZceXLSq1ViMYPxjhY2"
+): Promise<AllContributionData[]> => {
   const db = getDatabase();
   const groupRef = db.ref("groups");
-  const groupList: CreateContribution[] = [];
+  const groupList: AllContributionData[] = [];
 
   // Return a Promise to wait for the asynchronous operation to complete
+
   return new Promise((resolve, reject) => {
     groupRef.once(
       "value",
@@ -34,10 +54,16 @@ const getUsersContributionGroups = async (
               group.admin === user ||
               (group.participants && group.participants.includes(user))
             ) {
-              groupList.push(group);
+              groupList.push({
+                ...group,
+                remaining: percentageContributed(
+                  group.amount,
+                  group.contributedAmount
+                ),
+              });
             }
           });
-          resolve(groupList); // Resolve the Promise with the groupList
+          resolve(groupList.reverse()); // Resolve the Promise with the groupList
         } else {
           resolve(groupList); // If no data exists, resolve with an empty list
         }

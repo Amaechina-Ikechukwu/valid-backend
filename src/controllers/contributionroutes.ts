@@ -11,7 +11,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { ServerValue } from "firebase-admin/database";
 
 const contributionRouter = Router();
-contributionRouter.get("/", verifyIDToken, async (req: CustomRequest, res) => {
+contributionRouter.get("/", async (req: CustomRequest, res) => {
   try {
     const groupLists = await getUsersContributionGroups(req.user);
     res.status(200).json({
