@@ -35,7 +35,7 @@ const createContribution = async (
 };
 
 const getUsersContributionGroups = async (
-  user: string = "XOOGNnqduEZceXLSq1ViMYPxjhY2"
+  user: string
 ): Promise<AllContributionData[]> => {
   const db = getDatabase();
   const groupRef = db.ref("groups");
