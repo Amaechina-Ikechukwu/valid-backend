@@ -2,13 +2,19 @@ import { Router } from "express";
 
 import type { BodyContributionData, CustomRequest } from "../../configs/types";
 import {
+  checkIfGroupNameExists,
   createContribution,
+  getGroupInfo,
   getUsersContributionGroups,
 } from "../actions/contribution";
 import verifyIDToken from "../../middilewares/verifyIDToken";
 import { uuidv7 } from "uuidv7";
 import { Timestamp } from "firebase-admin/firestore";
 import { ServerValue } from "firebase-admin/database";
+import {
+  approveWithdrawalAdmin,
+  initiateGroupWithdrawalProcess,
+} from "../actions/grouptransactions";
 
 const contributionRouter = Router();
 contributionRouter.get("/", verifyIDToken, async (req: CustomRequest, res) => {
@@ -41,6 +47,65 @@ contributionRouter.post(
 
       res.status(201).json({ message: response });
     } catch (error) {
+      res.status(500).json({ message: "Error creating contribution" });
+    }
+  }
+);
+
+contributionRouter.get("/:name", async (req, res) => {
+  try {
+    const name = req.params.name;
+    const response = await getGroupInfo(name);
+
+    res
+      .status(200)
+      .json({ message: "Group successfully retrieved", data: response });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error creating contribution" });
+  }
+});
+contributionRouter.post("/checkgroupname", async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const response = await checkIfGroupNameExists(name);
+    res
+      .status(200)
+      .json({ message: "Group successfully retrieved", data: response });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error creating contribution" });
+  }
+});
+contributionRouter.put(
+  "/adminwithdrawal/:id",
+  verifyIDToken,
+  async (req: CustomRequest, res) => {
+    try {
+      const id = req.params.id;
+      const response = await initiateGroupWithdrawalProcess(id, req.user);
+      res.status(200).json({
+        message:
+          "Withdrawal process initiated. Please notify participants of approve your request",
+        data: response,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating contribution" });
+    }
+  }
+);
+contributionRouter.put(
+  "/approvewithdrawal/:id",
+  verifyIDToken,
+  async (req: CustomRequest, res) => {
+    try {
+      const id = req.params.id;
+      const response = await approveWithdrawalAdmin(id, req.user);
+      res.status(200).json({
+        message:
+          "You have approved the withdrawal of this fund. Once other participants have approved the admin (creator of the group) will be able to withdraw this fund.",
+        data: response,
+      });
+    } catch (error: any) {
       res.status(500).json({ message: "Error creating contribution" });
     }
   }

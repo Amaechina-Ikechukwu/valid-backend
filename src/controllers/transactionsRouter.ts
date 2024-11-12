@@ -23,10 +23,8 @@ transactionsRouter.post("/flw-webhook", async (req, res) => {
       payload.amount,
       payload.currency
     );
-    console.log({ result });
     if (result == true) {
       const checked = await checkIfEventAsBeenRecieved(payload);
-      console.log({ checked });
     } else {
       res.status(422).end();
     }
@@ -40,11 +38,12 @@ transactionsRouter.get("/group/:id", verifyIDToken, async (req, res) => {
     const result = await getGroupTransactionsDetails(id);
     res
       .status(200)
-      .json({ message: "Transactions retrieved succefully", result });
+      .json({ message: "Transactions retrieved succefully", data: result });
   } catch (error) {
     res
       .status(500)
       .json("Could not retrieve transactions at the moment : " + error);
   }
 });
+
 export { transactionsRouter };

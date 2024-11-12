@@ -1,14 +1,102 @@
-import { getDatabase } from "firebase-admin/database";
+import { getDatabase, ServerValue } from "firebase-admin/database";
 import type {
+  BodyContributionData,
   FlutterWaveWebhookEvent,
   TransactionData,
 } from "../../configs/types";
 import logger from "../../configs/logger";
+import { getEmailByUserId } from "./users";
 
 function getFilteredTransactionData(data: any): Partial<TransactionData> {
   const { email, currency, amount, createdAt } = data;
   return { email, currency, amount, createdAt };
 }
+
+const initiateGroupWithdrawalProcess = async (
+  id: string,
+  user: string
+): Promise<void> => {
+  const db = getDatabase();
+  const groupRef = db.ref(`groups`);
+
+  try {
+    const snapshot = await groupRef
+      .orderByChild("id")
+      .equalTo(id)
+      .once("value");
+    const groupData = snapshot.val();
+
+    if (!groupData) {
+      throw new Error("Group not found");
+    }
+
+    const groupKey = Object.keys(groupData)[0];
+    const group = groupData[groupKey];
+
+    if (group.admin !== user) {
+      throw new Error("This user is not an admin");
+    }
+
+    await groupRef.child(`${groupKey}`).update({
+      adminWithdrawal: {
+        initiated: true,
+        initiatedAt: ServerValue.TIMESTAMP,
+      },
+    });
+  } catch (error) {
+    logger.error("Failed to initiate withdrawal:", error);
+    throw error;
+  }
+};
+
+const approveWithdrawalAdmin = async (
+  id: string,
+  user: string
+): Promise<void> => {
+  const db = getDatabase();
+  const groupRef = db.ref(`groups`);
+  const userEmail = await getEmailByUserId(user);
+
+  if (!userEmail || userEmail.length < 1) {
+    console.error("User email not found or invalid.");
+    return;
+  }
+
+  try {
+    const snapshot = await groupRef
+      .orderByChild("id")
+      .equalTo(id)
+      .once("value");
+    const groupData = snapshot.val();
+
+    if (!groupData) {
+      throw new Error("Group not found");
+    }
+
+    const groupKey = Object.keys(groupData)[0];
+    const group = groupData[groupKey];
+
+    const participants: string[] = group?.participants || [];
+    let withdrawalApprovalCount: number = group?.withdrawalApprovalCount ?? 0;
+
+    if (!participants.includes(userEmail)) {
+      throw new Error("User not part of this group");
+    }
+
+    if (withdrawalApprovalCount >= participants.length) {
+      throw new Error("Approval limit reached");
+    }
+
+    withdrawalApprovalCount += 1;
+
+    await groupRef.child(`${groupKey}`).update({
+      withdrawalApprovalCount,
+    });
+  } catch (error) {
+    logger.error("Failed to approve withdrawal:", error);
+    throw error;
+  }
+};
 
 const getGroupTransactionsDetails = (
   groupid: string
@@ -37,25 +125,39 @@ const updateGroupContributionAmount = (
   payload: FlutterWaveWebhookEvent
 ): Promise<void> => {
   const db = getDatabase();
-  const groupRef = db.ref(`groups/${payload.meta_data.groupId}`);
+  const groupRef = db.ref(`groups`);
 
   return new Promise((resolve, reject) => {
     groupRef
+      .orderByChild("name")
+      .equalTo(payload.meta_data.groupId)
       .once("value")
       .then((snapshot) => {
-        const contributed = snapshot.val()?.contributedAmount || 0; // Safely handle undefined values
-        const participants: string[] = snapshot.val()?.participants;
-        if (participants.includes(payload.customer.email) == false) {
-          participants.push(payload.customer.email);
-          return groupRef.update({
-            contributedAmount: contributed + payload.amount,
-            participants: participants,
-          });
-        } else {
-          return groupRef.update({
-            contributedAmount: contributed + payload.amount,
-          });
+        if (!snapshot.exists()) {
+          throw new Error("Group not found");
         }
+
+        // Assuming there's only one matching group
+        const groupKey = Object.keys(snapshot.val())[0];
+        const groupData = snapshot.val()[groupKey];
+        const contributed = groupData.contributedAmount || 0;
+        const participants = Array.isArray(groupData.participants)
+          ? groupData.participants
+          : [];
+
+        // Prepare the update data
+        const updateData: Partial<BodyContributionData> = {
+          contributedAmount: contributed + payload.amount,
+        };
+
+        // Add new participant if they’re not already in the list
+        if (!participants.includes(payload.customer.email)) {
+          participants.push(payload.customer.email);
+          updateData.participants = participants;
+        }
+
+        // Update the specific group record
+        return groupRef.child(groupKey).update(updateData);
       })
       .then(() => {
         resolve(); // Resolve when the update is successful
@@ -92,4 +194,6 @@ export {
   updateGroupContributionAmount,
   updateGroupTransactionDetails,
   getGroupTransactionsDetails,
+  initiateGroupWithdrawalProcess,
+  approveWithdrawalAdmin,
 };

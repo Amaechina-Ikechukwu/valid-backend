@@ -11,12 +11,17 @@ import { transactionsRouter } from "./src/controllers/transactionsRouter";
 import cors from "cors";
 import helmet from "helmet"; // Security headers
 import rateLimit from "express-rate-limit"; // Rate limiting
+import logger from "./configs/logger";
+import aiRouter from "./src/controllers/aiRouter";
 
 const app = express();
 const port = process.env.PORT || 3008;
 
 // Security: Environment-based CORS configuration
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? [process.env.ALLOWED]
+    : ["http://localhost:3000"];
 
 app.use(
   cors({
@@ -69,9 +74,11 @@ app.use(express.json());
 app.use("/user", usersRouter);
 app.use("/contributions", contributionRouter);
 app.use("/transactions", transactionsRouter);
+app.use("/ai", aiRouter);
 
 // Centralized error handling
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  logger.error(err);
   console.error(err.message); // Log error details (avoid logging sensitive data)
   res.status(err.status || 500).json({ error: "Internal Server Error" });
 });

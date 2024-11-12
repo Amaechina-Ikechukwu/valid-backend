@@ -19,7 +19,7 @@ export interface BodyContributionData {
   purpose?: string;
   photoUrl?: string;
   participants: [];
-  remaining: number;
+  contributedAmount: number;
   id: string;
 }
 export interface AllContributionData {
