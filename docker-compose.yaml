@@ -1,4 +1,4 @@
-version: "3.8"
+version: "4.35.1"
 
 services:
   valid:
@@ -10,8 +10,8 @@ services:
       - FLW_SECRET_HASH=${FLW_SECRET_HASH}
       - FLW_PUBLIC_KEY=${FLW_PUBLIC_KEY}
       - FLW_SECRET_KEY=${FLW_SECRET_KEY}
-      - PORT=${PORT}
+      - PORT=${PORT:-8080} # Fallback to 8080 if PORT is unset
     ports:
-      - "${PORT}:${PORT}" # Exposes the PORT defined in .env or defaults if specified
+      - "${PORT:-8080}:${PORT:-8080}" # Match the fallback port
     env_file:
       - .env

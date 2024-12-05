@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import type { BodyContributionData, CustomRequest } from "../../configs/types";
 import {
+  addCurrencyToData,
   checkIfGroupNameExists,
   createContribution,
   getGroupInfo,
@@ -42,6 +43,7 @@ contributionRouter.post(
         participants: [],
         id: uuid,
         timestamp: ServerValue.TIMESTAMP,
+        currency: "NGN",
       };
       const response = await createContribution(newData);
 
@@ -110,5 +112,16 @@ contributionRouter.put(
     }
   }
 );
+contributionRouter.put("/updatecurrency", async (req: CustomRequest, res) => {
+  try {
+    const id = req.params.id;
+    await addCurrencyToData();
+    res.status(200).json({
+      message: "Currency added to database.",
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error added data to database" });
+  }
+});
 
 export default contributionRouter;

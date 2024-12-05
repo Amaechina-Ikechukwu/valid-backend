@@ -16,13 +16,10 @@ import aiRouter from "./src/controllers/aiRouter";
 
 const app = express();
 const port = process.env.PORT || 3008;
-
+app.set("trust proxy", true);
 // Security: Environment-based CORS configuration
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? [process.env.ALLOWED]
-    : ["http://localhost:3000"];
-
+const allowedOrigins = ["http://localhost:3000", process.env.ALLOWED];
+var serviceAccount = require("./xx.json");
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -39,7 +36,7 @@ app.use(
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
+  credential: admin.credential.cert(serviceAccount),
   databaseURL: process.env.DATABASE_URL,
 });
 

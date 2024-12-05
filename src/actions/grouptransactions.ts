@@ -41,8 +41,22 @@ const initiateGroupWithdrawalProcess = async (
       adminWithdrawal: {
         initiated: true,
         initiatedAt: ServerValue.TIMESTAMP,
+        approved: false,
       },
     });
+    const participants: string[] = group?.participants || [];
+    const userEmail = await getEmailByUserId(user);
+
+    let withdrawalApprovalCount: number = group?.withdrawalApprovalCount ?? 0;
+    //if admin contributed, once he initializes withdrawal, his count is added to
+    // the approveWithdrawalAdmin function was not reused to prevent certain issue as it was desgined for non-admins
+    if (participants.includes(userEmail)) {
+      withdrawalApprovalCount += 1;
+
+      await groupRef.child(`${groupKey}`).update({
+        withdrawalApprovalCount,
+      });
+    }
   } catch (error) {
     logger.error("Failed to initiate withdrawal:", error);
     throw error;
@@ -84,7 +98,13 @@ const approveWithdrawalAdmin = async (
     }
 
     if (withdrawalApprovalCount >= participants.length) {
-      throw new Error("Approval limit reached");
+      await groupRef.child(`${groupKey}`).update({
+        adminWithdrawal: {
+          initiated: true,
+          initiatedAt: ServerValue.TIMESTAMP,
+          approved: true, // approves admin
+        },
+      });
     }
 
     withdrawalApprovalCount += 1;

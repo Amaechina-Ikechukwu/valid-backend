@@ -134,10 +134,43 @@ const getGroupInfo = (name: string): Promise<BodyContributionData | null> => {
       );
   });
 };
+const addCurrencyToData = (): Promise<void | null> => {
+  const db = getDatabase();
+  const groupRef = db.ref(`groups`);
+
+  return new Promise((resolve, reject) => {
+    groupRef.once(
+      "value",
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const groupData = snapshot.val();
+          const groupKeys = Object.keys(groupData);
+
+          // Update currency for all groups
+          groupKeys.forEach((key) => {
+            db.ref(`groups/${key}`).update({ currency: "NGN" });
+          });
+
+          console.log("Currency updated for all groups.");
+
+          resolve();
+        } else {
+          console.log("No groups found.");
+          resolve(null);
+        }
+      },
+      (error) => {
+        console.error("Error fetching groups:", error);
+        reject(error); // Reject the Promise if there's an error
+      }
+    );
+  });
+};
 
 export {
   createContribution,
   getUsersContributionGroups,
   getGroupInfo,
   checkIfGroupNameExists,
+  addCurrencyToData,
 };
