@@ -1,7 +1,17 @@
 import { getDatabase } from "firebase-admin/database";
 import logger from "../../configs/logger";
-import type { FlutterWaveWebhookEvent } from "../../configs/types";
+import type {
+  AccountDetailsResponse,
+  FlutterWaveWebhookEvent,
+} from "../../types/types";
 import { updateGroupTransactionDetails } from "./grouptransactions";
+import type {
+  BankFetchResponse,
+  TransferFee,
+  TransferFeeResponse,
+  TransferRequest,
+  TransferRequestResponse,
+} from "../../types/transactiontypes";
 
 const Flutterwave = require("flutterwave-node-v3");
 const flw = new Flutterwave(
@@ -78,5 +88,86 @@ const checkIfEventAsBeenRecieved = async (payload: FlutterWaveWebhookEvent) => {
     return false;
   }
 };
+const verifyTransferBankAccount = async (details: {
+  account_number: string;
+  account_bank: string;
+}) => {
+  try {
+    const newDetails = {
+      account_number: details.account_number,
+      account_bank: details.account_bank,
+    };
+    const response: AccountDetailsResponse = await flw.Misc.verify_Account(
+      newDetails
+    );
+    if (response.status === "error") {
+      logger.error(response.message);
+      throw new Error(response.message);
+    }
+    return response;
+  } catch (error: any) {
+    logger.error(error.message || error);
+    throw error; // Ensure the error propagates to the caller.
+  }
+};
+const getTransferFee = async (payload: TransferFee) => {
+  try {
+    const response: TransferFeeResponse = await flw.Transfer.fee(payload);
+    if (response.status === "error") {
+      logger.error(response.message);
+      throw new Error(response.message);
+    }
+    return response;
+  } catch (error: any) {
+    logger.error(error.message || error);
+    throw error; // Ensure the error propagates to the caller.
+  }
+};
+const makeTransferRequest = async (payload: TransferRequest) => {
+  try {
+    const response: TransferRequestResponse = await flw.Transfer.initiate(
+      payload
+    );
+    if (response.status === "error") {
+      logger.error(response.message);
+      throw new Error(response.message);
+    }
+    return response;
+  } catch (error: any) {
+    logger.error(error.message || error);
+    throw error; // Ensure the error propagates to the caller.
+  }
+};
 
-export { verifyFlutterWebhook, checkIfEventAsBeenRecieved };
+const getNigerianBanks = async () => {
+  try {
+    const response = await fetch("https://api.flutterwave.com/v3/banks/NG", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
+      },
+    });
+
+    const data: BankFetchResponse = await response.json();
+    console.log({ data });
+    if (data.status === "success") {
+      return data;
+    } else {
+      logger.error(data.message || "Could fetch Banks");
+      throw new Error(data.message || "Could fetch Banks");
+    }
+  } catch (error) {
+    logger.error(error || error);
+    throw error; // Ensure the error propagates to the caller.
+  }
+};
+
+export {
+  verifyFlutterWebhook,
+  checkIfEventAsBeenRecieved,
+  verifyTransferBankAccount,
+  getTransferFee,
+  makeTransferRequest,
+  getNigerianBanks,
+};

@@ -3,7 +3,7 @@ import type {
   AllContributionData,
   BodyContributionData,
   CreateContribution,
-} from "../../configs/types";
+} from "../../types/types";
 
 const percentageContributed = (
   amount: string | number,

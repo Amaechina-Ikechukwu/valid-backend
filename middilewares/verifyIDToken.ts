@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { getAuth } from "firebase-admin/auth";
-import type { CustomRequest } from "../configs/types";
+import type { CustomRequest } from "../types/types";
 import logger from "../configs/logger";
 
 const verifyIDToken = async (

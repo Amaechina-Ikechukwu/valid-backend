@@ -40,13 +40,20 @@ admin.initializeApp({
   databaseURL: process.env.DATABASE_URL,
 });
 
+// Set "trust proxy" to a specific value (e.g., number of hops or specific IP range)
+app.set("trust proxy",1 || "loopback");
+
 // Security: Rate limiting to mitigate brute-force attacks
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Too many requests, please try again later.",
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skipFailedRequests: true, // Do not count failed requests (optional)
 });
 app.use(limiter);
+
 
 // Security: Set secure HTTP headers
 app.use(helmet());
@@ -55,7 +62,14 @@ app.use(helmet());
 app.use(morganMiddleware);
 
 // JSON parser
-app.use(express.json());
+// Apply body-parser middlewares conditionally
+app.use((req, res, next) => {
+  if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") {
+    express.json()(req, res, next);
+  } else {
+    next();
+  }
+});
 
 // Input validation middleware (for demonstration, add actual validation logic)
 // const validateRequest = (req, res, next) => {

@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import type { BodyContributionData, CustomRequest } from "../../configs/types";
+import type { BodyContributionData, CustomRequest } from "../../types/types";
 import {
   addCurrencyToData,
   checkIfGroupNameExists,

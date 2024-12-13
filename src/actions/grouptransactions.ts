@@ -3,7 +3,7 @@ import type {
   BodyContributionData,
   FlutterWaveWebhookEvent,
   TransactionData,
-} from "../../configs/types";
+} from "../../types/types";
 import logger from "../../configs/logger";
 import { getEmailByUserId } from "./users";
 

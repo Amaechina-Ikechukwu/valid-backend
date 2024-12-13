@@ -1,36 +1,3 @@
-import type { Request } from "express";
-
-export interface CustomRequest extends Request {
-  user?: string;
-}
-
-export interface CreateContribution {
-  name: string;
-  amount: string;
-  photoUrl?: string;
-  admin: string;
-  participants: string[];
-  id: string;
-  purpose?: string;
-}
-export interface BodyContributionData {
-  name: string;
-  amount: string;
-  purpose?: string;
-  photoUrl?: string;
-  participants: [];
-  contributedAmount: number;
-  id: string;
-}
-export interface AllContributionData {
-  name: string;
-  photoUrl?: string;
-  remaining: number;
-  id: string;
-  admin: string;
-  participants: string[];
-}
-
 export type FlutterWaveWebhookEvent = {
   id: number;
   txRef: string;
@@ -80,4 +47,68 @@ export interface TransactionData {
   amount: number;
   createdAt: string;
   [key: string]: any; // Allows additional properties in the input object
+}
+
+export interface AccountDetailsResponse {
+  status: "success" | "error";
+  message: string;
+  data: {
+    account_number: string;
+    account_name: string;
+  };
+}
+export interface TransferFeeResponse {
+  status: "success" | "error";
+  message: string;
+  data: TransferFee[];
+}
+
+export interface TransferFee {
+  currency: string;
+  amount: string;
+}
+export interface TransferRequest {
+  account_bank: string;
+  account_number: string;
+  amount: number;
+  narration: string;
+  currency: string;
+  reference: string;
+  callback_url: string;
+  debit_currency: string;
+}
+
+export interface TransferRequestResponse {
+  status: "success" | "error";
+  message: string;
+  data: {
+    id: number;
+    account_number: string;
+    bank_code: string;
+    full_name: string;
+    created_at: string;
+    currency: string;
+    debit_currency: string;
+    amount: number;
+    fee: number;
+    status: string;
+    reference: string;
+    meta: null | Record<string, unknown>;
+    narration: string;
+    complete_message: string;
+    requires_approval: number;
+    is_approved: number;
+    bank_name: string;
+  };
+}
+export interface BankFetchResponse {
+  status: "success" | "error";
+  message: string;
+  data: Bank[];
+}
+
+export interface Bank {
+  id: number;
+  code: string;
+  name: string;
 }
